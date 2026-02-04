@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Api.Model;
 using Microsoft.EntityFrameworkCore;
+using WebApp.Api.DTOs;
 
 namespace WebApp.Api.Controllers
 {
@@ -47,21 +48,24 @@ namespace WebApp.Api.Controllers
 
         [HttpPost]
         [Route("/inventory/add/product")]
-        public async Task<IActionResult> AddProduct([FromBody] Product product)
+        public async Task<IActionResult> AddProduct([FromBody] ProductDto dto)
         {
-            if (product is null)
-            {
+            if (dto is null)
                 return BadRequest();
-            }
-            try
+
+            var product = new Product
             {
-                await _context.Products.AddAsync(product);
-                return Ok();
-            }
-            catch
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error adding product with id: " + product.Id);
-            }
+                Id = Guid.NewGuid(),
+                Name = dto.Name,
+                Price = dto.Price,
+                Description = dto.Description,
+                CategoryId = dto.CategoryId,
+                Category = await _context.Categories.FindAsync(dto.CategoryId)
+            };
+
+            await _context.Products.AddAsync(product);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }

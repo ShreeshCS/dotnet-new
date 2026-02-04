@@ -10,9 +10,9 @@ public class ShopContext(DbContextOptions<ShopContext> options) : DbContext(opti
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Category>()
-            .HasMany(c => c.Products)
-            .WithOne(p => p.Category)
+        modelBuilder.Entity<Product>()
+            .HasOne(p => p.Category)
+            .WithMany(c => c.Products)
             .HasForeignKey(p => p.CategoryId);
 
         modelBuilder.Seed();
