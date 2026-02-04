@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApp.Api.Model;
 using Microsoft.EntityFrameworkCore;
+using WebApp.Api.DTOs;
+using WebApp.Api.DTOs.ReadDtos;
+using WebApp.Api.DTOs.CreateUpdateDtos;
 
 namespace WebApp.Api.Controllers
 {
@@ -18,9 +21,21 @@ namespace WebApp.Api.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
+        public async Task<ActionResult<IEnumerable<ReadProductDto>>> GetAllProducts()
         {
-            var products = await _context.Products.ToListAsync();
+            var products = _context.Products
+            .Include(p => p.Category)
+            .Select(p => new ReadProductDto
+            {
+                Name = p.Name,
+                Price = p.Price,
+                Description = p.Description,
+                Category = new ReadCategoryDto
+                {
+                    Id = p.Category.Id,
+                    Name = p.Category.Name
+                }
+            });
             return Ok(products);
         }
 
@@ -47,21 +62,24 @@ namespace WebApp.Api.Controllers
 
         [HttpPost]
         [Route("/inventory/add/product")]
-        public async Task<IActionResult> AddProduct([FromBody] Product product)
+        public async Task<IActionResult> AddProduct([FromBody] CreateProductDto dto)
         {
-            if (product is null)
-            {
+            if (dto is null)
                 return BadRequest();
-            }
-            try
+
+            var product = new Product
             {
-                await _context.Products.AddAsync(product);
-                return Ok();
-            }
-            catch
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error adding product with id: " + product.Id);
-            }
+                Id = Guid.NewGuid(),
+                Name = dto.Name,
+                Price = dto.Price,
+                Description = dto.Description,
+                CategoryId = dto.CategoryId,
+                Category = await _context.Categories.FindAsync(dto.CategoryId) ?? throw new InvalidOperationException($"Category not found with id: {dto.CategoryId}")
+            };
+
+            await _context.Products.AddAsync(product);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }
