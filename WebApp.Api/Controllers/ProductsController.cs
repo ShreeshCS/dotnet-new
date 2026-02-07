@@ -41,8 +41,8 @@ namespace WebApp.Api.Controllers
 
 
         [HttpGet]
-        [Route("{id:int}")]
-        public async Task<ActionResult<Product>> GetProductById(int id)
+        [Route("{id:guid}")]
+        public async Task<ActionResult<Product>> GetProductById(Guid id)
         {
             var product = await _context.Products.FindAsync(id);
             if (product == null)
