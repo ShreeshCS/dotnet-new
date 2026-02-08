@@ -21,8 +21,7 @@ namespace WebApp.Api.Model
                     Name = "Men's Running Shorts",
                     Price = 29.99m,
                     Description = "Lightweight, breathable shorts for men. Perfect for running and gym workouts.",
-                    CategoryId = 1,
-                    Category = new Category { Id = 1, Name = "Active Wear - Men" }
+                    CategoryId = 1
                 },
                 new Product
                 {
@@ -30,8 +29,7 @@ namespace WebApp.Api.Model
                     Name = "Women's Yoga Leggings",
                     Price = 39.99m,
                     Description = "High-waisted leggings for women. Ideal for yoga, pilates, and everyday wear.",
-                    CategoryId = 2,
-                    Category = new Category { Id = 2, Name = "Active Wear - Women" }
+                    CategoryId = 2
                 },
                 new Product
                 {
@@ -39,8 +37,7 @@ namespace WebApp.Api.Model
                     Name = "Spring Mineral Water (1L)",
                     Price = 1.99m,
                     Description = "Pure spring mineral water, bottled at the source. Refreshing and healthy.",
-                    CategoryId = 3,
-                    Category = new Category { Id = 3, Name = "Mineral Water" }
+                    CategoryId = 3
                 },
                 new Product
                 {
@@ -48,8 +45,7 @@ namespace WebApp.Api.Model
                     Name = "Fitness Magazine - Jan 2026",
                     Price = 5.99m,
                     Description = "Latest edition of Fitness Magazine. Includes tips, workouts, and nutrition advice.",
-                    CategoryId = 4,
-                    Category = new Category { Id = 4, Name = "Publications" }
+                    CategoryId = 4
                 },
                 new Product
                 {
@@ -57,8 +53,7 @@ namespace WebApp.Api.Model
                     Name = "Vitamin D3 Supplement",
                     Price = 14.99m,
                     Description = "Vitamin D3 tablets for daily health. Supports bone and immune system.",
-                    CategoryId = 5,
-                    Category = new Category { Id = 5, Name = "Supplements" }
+                    CategoryId = 5
                 }
             );
         }
