@@ -23,20 +23,26 @@ namespace WebApp.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ReadProductDto>>> GetAllProducts()
         {
-            var products = _context.Products
-            .Include(p => p.Category)
-            .Select(p => new ReadProductDto
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .ToListAsync();
+
+            var result = products.Select(p => new ReadProductDto
             {
+                Id = p.Id,
                 Name = p.Name,
                 Price = p.Price,
                 Description = p.Description,
-                Category = new ReadCategoryDto
-                {
-                    Id = p.Category.Id,
-                    Name = p.Category.Name
-                }
+                Category = p.Category == null
+                    ? throw new InvalidOperationException($"Category not found for product with id: {p.Id}")
+                    : new ReadCategoryDto
+                    {
+                        Id = p.Category.Id,
+                        Name = p.Category.Name
+                    },
             });
-            return Ok(products);
+
+            return Ok(result);
         }
 
 
@@ -49,7 +55,20 @@ namespace WebApp.Api.Controllers
             {
                 return NotFound($"Product not found with id:{id}");
             }
-            return Ok(product);
+            return Ok(new ReadProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Description = product.Description,
+                Category = product.Category == null
+                    ? throw new InvalidOperationException($"Category not found for product with id: {id}")
+                    : new ReadCategoryDto
+                    {
+                        Id = product.Category.Id,
+                        Name = product.Category.Name
+                    }
+            });
         }
 
         [HttpGet]
@@ -79,6 +98,38 @@ namespace WebApp.Api.Controllers
 
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("/inventory/add/bulk-upload/products")]
+        public async Task<IActionResult> BulkAddProducts([FromBody] List<CreateProductDto> productDto)
+        {
+            if (productDto is null)
+                return BadRequest();
+
+            try
+            {
+                foreach (var p in productDto)
+                {
+                    var product = new Product
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = p.Name,
+                        Price = p.Price,
+                        Description = p.Description,
+                        CategoryId = p.CategoryId,
+                        Category = await _context.Categories.FindAsync(p.CategoryId) ?? throw new InvalidOperationException($"Category not found with id: {p.CategoryId}")
+                    };
+
+                    await _context.AddAsync(product);
+                }
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured while running bulk upload " + ex.Data.ToString());
+            }
             return Ok();
         }
     }
