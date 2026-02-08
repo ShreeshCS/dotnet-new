@@ -1,8 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using WebApp.Api.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+}
 
 // Add services to the container.
 
