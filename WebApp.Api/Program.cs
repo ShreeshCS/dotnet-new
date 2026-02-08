@@ -18,6 +18,12 @@ builder.Services.AddDbContext<ShopContext>(options =>
 
 var app = builder.Build();
 
+// Execute stored procedure scripts at startup
+WebApp.Api.Database.DatabaseInitializer.ExecuteStoredProcedures(
+    connectionString,
+    Path.Combine(builder.Environment.ContentRootPath, "Database", "Scripts", "StoredProcedures")
+);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
