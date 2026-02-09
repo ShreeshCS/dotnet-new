@@ -11,9 +11,9 @@ public class DatabaseInitializer
     {
         foreach (var file in Directory.GetFiles(scriptsFolder, "*.sql"))
         {
+            var script = File.ReadAllText(file);
             try
             {
-                var script = File.ReadAllText(file);
                 using var connection = new MySqlConnection(connectionString);
                 connection.Open();
                 using var command = new MySqlCommand(script, connection);
@@ -21,15 +21,7 @@ public class DatabaseInitializer
             }
             catch (Exception ex)
             {
-                if (ex.GetType() == typeof(MySqlException))
-                {
-                    // Ignore "PROCEDURE already exists" error
-                    Console.WriteLine($"Stored procedure in {file} already exists. Skipping.");
-                }
-                else
-                {
-                    Console.WriteLine($"Error executing {file}: {ex.Message}");
-                }
+                Console.WriteLine($"Error executing {file}: {ex.Message}");
             }
         }
     }

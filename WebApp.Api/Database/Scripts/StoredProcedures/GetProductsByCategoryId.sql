@@ -1,3 +1,4 @@
+DROP PROCEDURE IF EXISTS GetProductsByCategoryId;
 CREATE PROCEDURE GetProductsByCategoryId(IN categoryId INT)
 BEGIN
     SELECT p.Id, p.Name, p.Price, p.Description, c.Id AS CategoryId, c.Name AS CategoryName
