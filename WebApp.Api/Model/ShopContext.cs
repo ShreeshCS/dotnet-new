@@ -15,6 +15,6 @@ public class ShopContext(DbContextOptions<ShopContext> options) : DbContext(opti
             .WithMany(c => c.Products)
             .HasForeignKey(p => p.CategoryId);
 
-        modelBuilder.Seed();
+        // modelBuilder.Seed();
     }
 }
